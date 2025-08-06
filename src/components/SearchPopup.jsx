@@ -27,7 +27,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { searchProducts } from "../utils/shopify";
 import { slugify } from "../utils/slugify";
-import { useCart } from "../contexts/CartContext";
+import { useCart } from "../context/CartContext";
 
 const SearchPopup = ({ open, onClose }) => {
   const [keyword, setKeyword] = useState("");
@@ -78,9 +78,7 @@ const SearchPopup = ({ open, onClose }) => {
 
     try {
       await addItemToCart(product.variantId, 1);
-      console.log("Added to cart:", product.title);
     } catch (error) {
-      console.error("Failed to add to cart:", error);
     } finally {
       setAddingToCart(null);
     }
@@ -177,20 +175,23 @@ const SearchPopup = ({ open, onClose }) => {
             value={keyword}
             onChange={handleInputChange}
             placeholder="Type to search products (min 2 characters)"
+            autoComplete="off"
             variant="outlined"
             fullWidth
             autoFocus
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    type="submit"
-                    disabled={loading || keyword.length < 2}
-                  >
-                    <SearchOutlined />
-                  </IconButton>
-                </InputAdornment>
-              ),
+            slotProps={{
+              input: {
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      type="submit"
+                      disabled={loading || keyword.length < 2}
+                    >
+                      <SearchOutlined />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              },
             }}
             onKeyDown={(e) => {
               if (e.key === "Enter") handleSearch(e);
@@ -205,7 +206,7 @@ const SearchPopup = ({ open, onClose }) => {
         </form>
 
         {loading && (
-          <Box sx={{ width: '100%', mt: 2 }}>
+          <Box sx={{ width: "100%", mt: 2 }}>
             <LinearProgress />
           </Box>
         )}
@@ -236,12 +237,12 @@ const SearchPopup = ({ open, onClose }) => {
                 </ListItemAvatar>
                 <ListItemText
                   primary={
-                    <Box
-                      sx={{
+                    <span
+                      style={{
                         display: "flex",
                         alignItems: "center",
-                        gap: 1,
-                        mb: 0.5,
+                        gap: "8px",
+                        marginBottom: "4px",
                       }}
                     >
                       <Typography variant="body1" component="span">
@@ -263,20 +264,31 @@ const SearchPopup = ({ open, onClose }) => {
                           variant="outlined"
                         />
                       )}
-                    </Box>
+                    </span>
                   }
                   secondary={
-                    <Box>
-                      <Typography variant="body2" color="text.secondary">
+                    <span>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        component="span"
+                      >
                         {product.productType}
                       </Typography>
                       {product.quantityAvailable > 0 &&
                         product.quantityAvailable <= 5 && (
-                          <Typography variant="caption" color="warning.main">
-                            Only {product.quantityAvailable} left in stock
-                          </Typography>
+                          <>
+                            <br />
+                            <Typography
+                              variant="caption"
+                              color="warning.main"
+                              component="span"
+                            >
+                              Only {product.quantityAvailable} left in stock
+                            </Typography>
+                          </>
                         )}
-                    </Box>
+                    </span>
                   }
                 />
                 <ListItemSecondaryAction>

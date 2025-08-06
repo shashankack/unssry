@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import { ShoppingCart, Close, Menu, SearchOutlined } from "@mui/icons-material";
 import { useLocation, useNavigate, Link as RouterLink } from "react-router-dom";
-import { useCart } from "../contexts/CartContext";
+import { useCart } from "../context/CartContext";
 import SearchPopup from "./SearchPopup";
 
 const Navbar = () => {

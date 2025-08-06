@@ -12,7 +12,7 @@ import { ShoppingCart } from "@mui/icons-material";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import { fetchAllCollections, fetchCollection } from "../../utils/shopify";
-import { useCart } from "../../contexts/CartContext";
+import { useCart } from "../../context/CartContext";
 import { slugify } from "../../utils/slugify";
 
 // Import Swiper styles
@@ -42,11 +42,8 @@ const ShopSection = ({
           await fetchCollection(collectionHandle, 12);
         setCollectionInfo(collection);
         setProducts(collectionProducts);
-        console.log("Collection Info:", collection);
-        console.log("Products:", collectionProducts);
       } catch (err) {
         setError(err.message);
-        console.error("Error fetching collection:", err);
       } finally {
         setLoading(false);
       }
@@ -84,7 +81,12 @@ const ShopSection = ({
   }
 
   return (
-    <Stack justifyContent="flex-start" alignItems="center" spacing={4} id="shop">
+    <Stack
+      justifyContent="flex-start"
+      alignItems="center"
+      spacing={4}
+      id="shop"
+    >
       {isMobile ? (
         <Stack
           bgcolor="primary.main"
@@ -401,7 +403,8 @@ const ShopSection = ({
                             if (variantId && isAvailable) {
                               addItemToCart(variantId, 1);
                             } else {
-                              console.error(
+                              // Optionally handle missing variantId here
+                              console.warn(
                                 "No variant ID found for product:",
                                 product.title
                               );

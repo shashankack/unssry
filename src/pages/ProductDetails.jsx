@@ -35,7 +35,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Thumbs, FreeMode } from "swiper/modules";
 import { fetchProductByTitle } from "../utils/shopify";
 import { unslugify } from "../utils/slugify";
-import { useCart } from "../contexts/CartContext";
+import { useCart } from "../context/CartContext";
 
 // Import Swiper styles
 import "swiper/css";

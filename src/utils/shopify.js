@@ -26,7 +26,6 @@ async function shopifyFetch(query, variables = {}) {
   const json = await res.json();
 
   if (json.errors) {
-    console.error("Shopify error:", json.errors);
     throw new Error(json.errors[0].message || "GraphQL error");
   }
 
@@ -147,11 +146,13 @@ export async function fetchCollection(collectionTitle, limit = 50) {
   }
 
   // Find exact match (case-insensitive)
-  const exactMatch = data.collections.edges.find(edge => 
-    edge.node.title.toLowerCase() === collectionTitle.toLowerCase()
+  const exactMatch = data.collections.edges.find(
+    (edge) => edge.node.title.toLowerCase() === collectionTitle.toLowerCase()
   );
 
-  const collection = exactMatch ? exactMatch.node : data.collections.edges[0].node;
+  const collection = exactMatch
+    ? exactMatch.node
+    : data.collections.edges[0].node;
 
   return {
     collection: {
@@ -194,8 +195,6 @@ export async function fetchAllCollections(limit = 50) {
     handle: edge.node.handle,
     image: edge.node.image?.url || null,
   }));
-
-  console.log("Fetched collections:", collections);
 
   return collections;
 }
@@ -250,11 +249,11 @@ export async function createCart() {
     }
   `;
   const data = await shopifyFetch(query);
-  
+
   if (data.cartCreate.userErrors.length > 0) {
     throw new Error(data.cartCreate.userErrors[0].message);
   }
-  
+
   return data.cartCreate.cart;
 }
 
@@ -315,11 +314,11 @@ export async function addToCart(cartId, variantId, quantity) {
 
   const variables = { cartId, variantId, quantity };
   const data = await shopifyFetch(query, variables);
-  
+
   if (data.cartLinesAdd.userErrors.length > 0) {
     throw new Error(data.cartLinesAdd.userErrors[0].message);
   }
-  
+
   return data.cartLinesAdd.cart;
 }
 
@@ -379,11 +378,11 @@ export async function removeFromCart(cartId, lineItemId) {
   };
 
   const data = await shopifyFetch(query, variables);
-  
+
   if (data.cartLinesRemove.userErrors.length > 0) {
     throw new Error(data.cartLinesRemove.userErrors[0].message);
   }
-  
+
   return data.cartLinesRemove.cart;
 }
 
@@ -441,14 +440,14 @@ export async function updateCartItemQuantity(cartId, lineItemId, quantity) {
       }
     }
   `;
-  
+
   const variables = { cartId, lineId: lineItemId, quantity };
   const data = await shopifyFetch(query, variables);
-  
+
   if (data.cartLinesUpdate.userErrors.length > 0) {
     throw new Error(data.cartLinesUpdate.userErrors[0].message);
   }
-  
+
   return data.cartLinesUpdate.cart;
 }
 
@@ -501,12 +500,10 @@ export async function getCart(cartId) {
 }
 
 export async function searchProducts(keyword) {
-  console.log("Searching for:", keyword);
-  
   if (!keyword || keyword.trim().length === 0) {
     return [];
   }
-  
+
   try {
     // First try a global product search using Shopify's search API
     const globalSearchQuery = `
@@ -547,137 +544,144 @@ export async function searchProducts(keyword) {
         }
       }
     `;
-    
+
     // Try different search patterns
     const searchQueries = [
       keyword.trim(),
       `title:*${keyword.trim()}*`,
       `product_type:*${keyword.trim()}*`,
-      `tag:*${keyword.trim()}*`
+      `tag:*${keyword.trim()}*`,
     ];
-    
+
     let allResults = [];
-    
+
     for (const searchQuery of searchQueries) {
-      console.log("Trying search query:", searchQuery);
       try {
         const variables = { query: searchQuery };
         const data = await shopifyFetch(globalSearchQuery, variables);
-        
+
         if (data.products && data.products.edges.length > 0) {
-          const products = data.products.edges.map(edge => edge.node);
-          console.log(`Found ${products.length} products with query:`, searchQuery);
+          const products = data.products.edges.map((edge) => edge.node);
+
           allResults = allResults.concat(products);
         }
       } catch (queryError) {
-        console.log("Query failed:", searchQuery, queryError.message);
         // Continue with next query pattern
       }
     }
-    
+
     // Remove duplicates based on product ID
     const uniqueProducts = allResults.reduce((acc, product) => {
-      if (!acc.find(p => p.id === product.id)) {
+      if (!acc.find((p) => p.id === product.id)) {
         acc.push(product);
       }
       return acc;
     }, []);
-    
+
     // If global search didn't work, try a simple fetch and filter approach
     if (uniqueProducts.length === 0) {
-      console.log("Global search returned no results, trying fetch all products approach");
       const allProducts = await fetchShopifyProducts(50);
-      
-      const filteredProducts = allProducts.filter(product => 
-        product.title.toLowerCase().includes(keyword.toLowerCase()) ||
-        product.productType.toLowerCase().includes(keyword.toLowerCase()) ||
-        (product.tags && product.tags.some(tag => 
-          tag.toLowerCase().includes(keyword.toLowerCase())
-        ))
+
+      const filteredProducts = allProducts.filter(
+        (product) =>
+          product.title.toLowerCase().includes(keyword.toLowerCase()) ||
+          product.productType.toLowerCase().includes(keyword.toLowerCase()) ||
+          (product.tags &&
+            product.tags.some((tag) =>
+              tag.toLowerCase().includes(keyword.toLowerCase())
+            ))
       );
-      
+
       uniqueProducts.push(...filteredProducts);
     }
-    
+
     // Additional client-side filtering to ensure relevance
-    const filteredResults = uniqueProducts.filter(product => 
-      product.title.toLowerCase().includes(keyword.toLowerCase()) ||
-      product.productType.toLowerCase().includes(keyword.toLowerCase())
+    const filteredResults = uniqueProducts.filter(
+      (product) =>
+        product.title.toLowerCase().includes(keyword.toLowerCase()) ||
+        product.productType.toLowerCase().includes(keyword.toLowerCase())
     );
-    
+
     // Format results
-    const results = filteredResults.slice(0, 10).map(product => {
-      const firstVariant = product.variants?.edges?.[0]?.node || product.variants?.[0];
+    const results = filteredResults.slice(0, 10).map((product) => {
+      const firstVariant =
+        product.variants?.edges?.[0]?.node || product.variants?.[0];
       const price = firstVariant?.price;
       const compareAtPrice = firstVariant?.compareAtPrice;
       const quantityAvailable = firstVariant?.quantityAvailable || 0;
       const availableForSale = firstVariant?.availableForSale || false;
-      
+
       return {
         id: product.id.split("/").pop(),
         title: product.title,
         productType: product.productType,
         handle: product.handle,
-        image: product.images?.edges?.[0]?.node?.url || product.images?.[0]?.url || null,
-        price: price ? {
-          amount: parseFloat(price.amount),
-          currencyCode: price.currencyCode
-        } : null,
-        compareAtPrice: compareAtPrice ? {
-          amount: parseFloat(compareAtPrice.amount),
-          currencyCode: compareAtPrice.currencyCode
-        } : null,
+        image:
+          product.images?.edges?.[0]?.node?.url ||
+          product.images?.[0]?.url ||
+          null,
+        price: price
+          ? {
+              amount: parseFloat(price.amount),
+              currencyCode: price.currencyCode,
+            }
+          : null,
+        compareAtPrice: compareAtPrice
+          ? {
+              amount: parseFloat(compareAtPrice.amount),
+              currencyCode: compareAtPrice.currencyCode,
+            }
+          : null,
         variantId: firstVariant?.id,
         quantityAvailable,
-        availableForSale
+        availableForSale,
       };
     });
-    
-    console.log("Final search results:", results);
+
     return results;
-    
   } catch (error) {
-    console.error("Search error:", error);
-    
     // Fallback: try simple product fetch and filter
     try {
-      console.log("Trying fallback search method");
       const allProducts = await fetchShopifyProducts(50);
-      const filteredProducts = allProducts.filter(product => 
-        product.title.toLowerCase().includes(keyword.toLowerCase()) ||
-        product.productType.toLowerCase().includes(keyword.toLowerCase())
+      const filteredProducts = allProducts.filter(
+        (product) =>
+          product.title.toLowerCase().includes(keyword.toLowerCase()) ||
+          product.productType.toLowerCase().includes(keyword.toLowerCase())
       );
-      
-      const results = filteredProducts.slice(0, 10).map(product => {
-        const firstVariant = product.variants?.edges?.[0]?.node || product.variants?.[0];
+
+      const results = filteredProducts.slice(0, 10).map((product) => {
+        const firstVariant =
+          product.variants?.edges?.[0]?.node || product.variants?.[0];
         const price = firstVariant?.price;
         const compareAtPrice = firstVariant?.compareAtPrice;
         const quantityAvailable = firstVariant?.quantityAvailable || 0;
         const availableForSale = firstVariant?.availableForSale || false;
-        
+
         return {
           id: product.id.split("/").pop(),
           title: product.title,
           productType: product.productType,
           image: product.images?.edges?.[0]?.node?.url || null,
-          price: price ? {
-            amount: parseFloat(price.amount),
-            currencyCode: price.currencyCode
-          } : null,
-          compareAtPrice: compareAtPrice ? {
-            amount: parseFloat(compareAtPrice.amount),
-            currencyCode: compareAtPrice.currencyCode
-          } : null,
+          price: price
+            ? {
+                amount: parseFloat(price.amount),
+                currencyCode: price.currencyCode,
+              }
+            : null,
+          compareAtPrice: compareAtPrice
+            ? {
+                amount: parseFloat(compareAtPrice.amount),
+                currencyCode: compareAtPrice.currencyCode,
+              }
+            : null,
           variantId: firstVariant?.id,
           quantityAvailable,
-          availableForSale
+          availableForSale,
         };
       });
-      
-      console.log("Fallback search results:", results);
+
       return results;
     } catch (fallbackError) {
-      console.error("Fallback search also failed:", fallbackError);
       return [];
     }
   }
@@ -750,8 +754,8 @@ export async function fetchProductByTitle(productTitle) {
   }
 
   // Find exact match (case-insensitive)
-  const exactMatch = data.products.edges.find(edge => 
-    edge.node.title.toLowerCase() === productTitle.toLowerCase()
+  const exactMatch = data.products.edges.find(
+    (edge) => edge.node.title.toLowerCase() === productTitle.toLowerCase()
   );
 
   const product = exactMatch ? exactMatch.node : data.products.edges[0].node;
@@ -763,8 +767,8 @@ export async function fetchProductByTitle(productTitle) {
     tags: product.tags,
     descriptionHtml: product.descriptionHtml,
     description: product.description,
-    images: product.images.edges.map(edge => edge.node),
-    variants: product.variants.edges.map(edge => edge.node),
+    images: product.images.edges.map((edge) => edge.node),
+    variants: product.variants.edges.map((edge) => edge.node),
     options: product.options,
   };
 }

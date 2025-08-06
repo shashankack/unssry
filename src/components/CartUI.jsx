@@ -19,7 +19,7 @@ import {
   ShoppingBag,
   DeleteOutline,
 } from "@mui/icons-material";
-import { useCart } from "../contexts/CartContext";
+import { useCart } from "../context/CartContext";
 
 const CartItem = ({ item }) => {
   const { updateItemQuantity, removeItemFromCart, loading } = useCart();
