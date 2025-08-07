@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { ShoppingCart } from "@mui/icons-material";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
-import { fetchAllCollections, fetchCollection } from "../../utils/shopify";
+import { fetchCollection } from "../../utils/shopify";
 import { useCart } from "../../context/CartContext";
 import { slugify } from "../../utils/slugify";
 
@@ -20,12 +20,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 
-const ShopSection = ({
-  collectionHandle = "RIPPED REALITY",
-  dropStatus = "Coming Soon",
-  title = "TITLE",
-  subTitle = "SUBTITLE",
-}) => {
+const ShopSection = ({ collectionHandle, dropStatus }) => {
   const [products, setProducts] = useState([]);
   const [collectionInfo, setCollectionInfo] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -365,7 +360,7 @@ const ShopSection = ({
                         >
                           {price?.amount} {price?.currencyCode}
                         </Typography>
-                        {!isAvailable && (
+                        {dropStatus === "Live Now" && !isAvailable && (
                           <Typography
                             variant="caption"
                             sx={{
@@ -379,23 +374,54 @@ const ShopSection = ({
                             Out of Stock
                           </Typography>
                         )}
-                        {isAvailable && quantityAvailable <= 5 && (
+                        {dropStatus === "Live Now" &&
+                          isAvailable &&
+                          quantityAvailable <= 5 && (
+                            <Typography
+                              variant="caption"
+                              sx={{
+                                color: "warning.main",
+                                fontSize: "10px",
+                                fontFamily: "Oswald, sans-serif",
+                                fontWeight: 600,
+                                textTransform: "uppercase",
+                              }}
+                            >
+                              Only {quantityAvailable} left
+                            </Typography>
+                          )}
+                      </Stack>
+
+                      {dropStatus === "Coming Soon" ? (
+                        <Box
+                          sx={{
+                            backgroundColor: "transparent",
+                            padding: "8px 12px",
+                            borderRadius: "4px",
+                            minWidth: "80px",
+                            textAlign: "center",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            height: "40px",
+                            border: 2,
+                          }}
+                        >
                           <Typography
                             variant="caption"
                             sx={{
-                              color: "warning.main",
-                              fontSize: "10px",
                               fontFamily: "Oswald, sans-serif",
                               fontWeight: 600,
                               textTransform: "uppercase",
+                              fontSize: "12px",
+                              lineHeight: 1,
+                              color: "text.primary",
                             }}
                           >
-                            Only {quantityAvailable} left
+                            Coming Soon
                           </Typography>
-                        )}
-                      </Stack>
-
-                      {isAvailable ? (
+                        </Box>
+                      ) : dropStatus === "Live Now" && isAvailable ? (
                         <IconButton
                           onClick={(e) => {
                             e.stopPropagation();
@@ -425,7 +451,7 @@ const ShopSection = ({
                         >
                           <ShoppingCart fontSize="small" />
                         </IconButton>
-                      ) : (
+                      ) : dropStatus === "Live Now" && !isAvailable ? (
                         <Box
                           sx={{
                             backgroundColor: "error.main",
@@ -453,7 +479,7 @@ const ShopSection = ({
                             Out of Stock
                           </Typography>
                         </Box>
-                      )}
+                      ) : null}
                     </Stack>
                   </Stack>
                 </Box>

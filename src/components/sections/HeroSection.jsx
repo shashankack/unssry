@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Box, Typography, Button, Stack } from "@mui/material";
+import { Box, Typography, Stack } from "@mui/material";
 
-const HeroSection = () => {
+const HeroSection = ({
+  collectionHandle = "collection_name",
+  taglines = [],
+}) => {
   const formatDate = (date) => {
     return date.toLocaleString("en-US", {
       month: "short",
@@ -21,6 +24,20 @@ const HeroSection = () => {
 
   const [currentDate, setCurrentDate] = useState(formatDate(new Date()));
   const [currentTime, setCurrentTime] = useState(formatTime(new Date()));
+  const [currentTagline, setCurrentTagline] = useState("");
+
+  // Set random tagline on component mount
+  useEffect(() => {
+    const getRandomTagline = () => {
+      if (taglines.length > 0) {
+        const randomIndex = Math.floor(Math.random() * taglines.length);
+        return taglines[randomIndex];
+      }
+      return "BUILT FOR THE UNNECESSARY"; // fallback
+    };
+
+    setCurrentTagline(getRandomTagline());
+  }, []); // Empty dependency array ensures this runs once on mount
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -35,7 +52,7 @@ const HeroSection = () => {
   return (
     <Box
       position="relative"
-      minHeight="100vh"
+      minHeight="80vh"
       width="100%"
       overflow="hidden"
       mb={10}
@@ -106,7 +123,7 @@ const HeroSection = () => {
           color="secondary.main"
           fontWeight={600}
         >
-          BUILT FOR THE UNNECESSARY
+          {currentTagline}
         </Typography>
         <Typography
           variant="h1"
@@ -119,7 +136,7 @@ const HeroSection = () => {
           p={2}
           my={4}
         >
-          WF24 COLLECTION
+          {collectionHandle} COLLECTION
         </Typography>
       </Stack>
     </Box>
