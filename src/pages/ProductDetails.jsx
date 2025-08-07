@@ -222,9 +222,9 @@ const ProductDetails = () => {
                       "--swiper-navigation-color": "#000",
                       "--swiper-navigation-size": "25px",
                       "--swiper-pagination-color": "#000",
-                      "--swiper-pagination-bullet-size": "8px",
-                      "--swiper-pagination-bullet-width": "20px",
-                      "--swiper-pagination-bullet-border-radius": "10px",
+                      // "--swiper-pagination-bullet-size": "8px",
+                      // "--swiper-pagination-bullet-width": "20px",
+                      // "--swiper-pagination-bullet-border-radius": "10px",
                     }}
                   >
                     {product.images.map((image, index) => (

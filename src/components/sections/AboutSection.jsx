@@ -37,7 +37,7 @@ const AboutSection = () => {
         bgcolor={"primary.main"}
         width="100%"
         px={1}
-        py={4}
+        py={6}
         justifyContent="center"
         alignItems="center"
         gap={2}
@@ -53,22 +53,14 @@ const AboutSection = () => {
           THE UNNECESSARY PHILOSOPHY
         </Typography>
         <Typography
-          fontWeight={400}
           maxWidth={800}
-          variant="h6"
-          textAlign={{
-            xs: "justify",
-            md: "center",
-          }}
-          fontSize={{
-            xs: 14,
-            md: 18,
-          }}
-          color="background.default"
+          textAlign="center"
+          variant="h1"
+          color="#aaa"
+          fontSize={16}
           textTransform="none"
-          sx={{
-            opacity: 0.9,
-          }}
+          letterSpacing={0.3}
+          lineHeight={1.5}
         >
           Unnecessary® exists for the ones who don't fit the algorithm. Our
           clothes are made for movement across lanes, ideas, and expectations.

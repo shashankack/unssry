@@ -85,15 +85,16 @@ const HeroSection = ({
           fontSize={{
             xs: 200,
             sm: 300,
-            md: 400,
+            md: 500,
           }}
-          color="#e6e3e3ff"
+          color="#dddddd"
           // sx={{ opacity: 0.1 }}
         >
           不要
         </Typography>
       </Box>
       <Stack
+        mt={5}
         position="absolute"
         sx={{
           width: "100%",
@@ -111,6 +112,7 @@ const HeroSection = ({
           color="secondary.main"
           variant="body1"
           fontSize="14px"
+          mb={2}
         >
           {currentDate} • {currentTime}
         </Typography>

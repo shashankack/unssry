@@ -161,7 +161,7 @@ const ShopSection = ({ collectionHandle, dropStatus }) => {
               Latest Drop
             </Typography>
           </Stack>
-          <Stack height="100%" justifyContent="end" width={1400}>
+          <Stack height="100%" justifyContent="center" width={1400}>
             <Typography
               variant="h1"
               color="text.secondary"
@@ -178,6 +178,8 @@ const ShopSection = ({ collectionHandle, dropStatus }) => {
               fontSize={16}
               textTransform="none"
               letterSpacing={0.3}
+              lineHeight={1.5}
+              // mb={4}
             >
               {collectionInfo?.description}
             </Typography>
