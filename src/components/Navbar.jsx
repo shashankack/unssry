@@ -29,9 +29,11 @@ const Navbar = () => {
     { name: "Contact", path: "#contact" },
   ];
 
-  const [showNavbar, setShowNavbar] = useState(true);
+  const [showNavbar, setShowNavbar] = useState(false); // Start hidden for GSAP animation
   const [lastScrollY, setLastScrollY] = useState(0);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [initialAnimationComplete, setInitialAnimationComplete] =
+    useState(false);
 
   // Search popup state
   const [searchOpen, setSearchOpen] = useState(false);
@@ -87,9 +89,12 @@ const Navbar = () => {
     }
   };
 
-  // Hide/show navbar on scroll
+  // Hide/show navbar on scroll (only after initial animation)
   useEffect(() => {
     const handleScroll = () => {
+      // Don't handle scroll until initial GSAP animation is complete
+      if (!initialAnimationComplete) return;
+
       const currentScrollY = window.scrollY;
 
       if (currentScrollY < 100) {
@@ -104,7 +109,18 @@ const Navbar = () => {
     window.addEventListener("scroll", handleScroll);
 
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY]);
+  }, [lastScrollY, initialAnimationComplete]);
+
+  // Set up initial GSAP animation trigger
+  useEffect(() => {
+    // Wait for GSAP animation from HeroSection, then enable scroll behavior
+    const timer = setTimeout(() => {
+      setInitialAnimationComplete(true);
+      setShowNavbar(true);
+    }, 3200); // After HeroSection animation completes (2.6s + 0.6s)
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleDrawerToggle = () => {
     setDrawerOpen(!drawerOpen);
@@ -231,6 +247,7 @@ const Navbar = () => {
   return (
     <>
       <AppBar
+        className="navbar"
         position="fixed"
         elevation={0}
         sx={{
@@ -260,7 +277,7 @@ const Navbar = () => {
               alignItems: "center",
               cursor: "pointer",
               "&:hover": { transform: "scale(1.05)" },
-              transition: "transform 0.25s",
+              transition: "transform 1s",
               mr: { xs: 1, md: 3 },
             }}
           >
