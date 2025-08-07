@@ -133,7 +133,6 @@ const NotFound = () => {
               textTransform: "uppercase",
               letterSpacing: 1,
               border: "2px solid",
-              borderColor: "text.secondary",
               "&:hover": {
                 backgroundColor: "text.secondary",
                 color: "background.default",
