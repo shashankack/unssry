@@ -8,6 +8,7 @@ import ProductDetails from "./pages/ProductDetails";
 import CartUI from "./components/CartUI";
 import { CartProvider } from "./context/CartContext";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
+import NotFound from "./pages/NotFound";
 
 const AppRoutes = () => {
   return (
@@ -18,6 +19,7 @@ const AppRoutes = () => {
         element={<ProductDetails />}
       />
       <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 };

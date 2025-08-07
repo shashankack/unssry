@@ -50,13 +50,25 @@ const HeroSection = ({
   }, []);
 
   return (
-    <Box
-      position="relative"
-      minHeight="80vh"
-      width="100%"
-      overflow="hidden"
-      mb={10}
-    >
+    <Box position="relative" minHeight="100vh" width="100%" overflow="hidden">
+      <Box
+        sx={{
+          zIndex: 1,
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          opacity: 0.05,
+          backgroundImage: `repeating-linear-gradient(
+                  45deg,
+                  transparent,
+                  transparent 20px,
+                  black 20px,
+                  black 21px
+                )`,
+        }}
+      />
       <Box
         position="absolute"
         width="100%"
@@ -65,7 +77,7 @@ const HeroSection = ({
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          zIndex: 1,
+          zIndex: 2,
         }}
       >
         <Typography
@@ -75,7 +87,8 @@ const HeroSection = ({
             sm: 300,
             md: 400,
           }}
-          sx={{ opacity: 0.1 }}
+          color="#e6e3e3ff"
+          // sx={{ opacity: 0.1 }}
         >
           不要
         </Typography>
@@ -89,7 +102,7 @@ const HeroSection = ({
           justifyContent: "center",
           backgroundSize: "cover",
           backgroundPosition: "center",
-          zIndex: 2,
+          zIndex: 3,
         }}
       >
         {/* Date and Time */}

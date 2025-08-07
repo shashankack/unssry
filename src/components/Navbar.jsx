@@ -26,7 +26,7 @@ const Navbar = () => {
     { name: "Home", path: "/" },
     { name: "Shop", path: "#shop" },
     { name: "About", path: "#about" },
-    { name: "Contact", path: "/contact" },
+    { name: "Contact", path: "#contact" },
   ];
 
   const [showNavbar, setShowNavbar] = useState(true);
@@ -37,6 +37,55 @@ const Navbar = () => {
   const [searchOpen, setSearchOpen] = useState(false);
 
   const navigate = useNavigate();
+
+  // Handle redirect with delay for section navigation
+  const handleRedirect = (sectionId) => {
+    if (location.pathname !== "/") {
+      // If not on home page, navigate to home first
+      navigate("/");
+      // Wait for navigation and DOM update, then scroll to section
+      setTimeout(() => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          element.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        } else {
+          // Fallback: try to find element by data attribute or class
+          const fallbackElement =
+            document.querySelector(`[data-section="${sectionId}"]`) ||
+            document.querySelector(`.${sectionId}-section`);
+          if (fallbackElement) {
+            fallbackElement.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            });
+          }
+        }
+      }, 300); // Small delay to ensure DOM is updated
+    } else {
+      // Already on home page, scroll immediately
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      } else {
+        // Fallback: try to find element by data attribute or class
+        const fallbackElement =
+          document.querySelector(`[data-section="${sectionId}"]`) ||
+          document.querySelector(`.${sectionId}-section`);
+        if (fallbackElement) {
+          fallbackElement.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }
+      }
+    }
+  };
 
   // Hide/show navbar on scroll
   useEffect(() => {
@@ -85,24 +134,7 @@ const Navbar = () => {
               onClick={(e) => {
                 e.preventDefault();
                 const sectionId = link.path.substring(1); // Remove the #
-                const element = document.getElementById(sectionId);
-                if (element) {
-                  element.scrollIntoView({
-                    behavior: "smooth",
-                    block: "start",
-                  });
-                } else {
-                  // Fallback: try to find element by data attribute or class
-                  const fallbackElement =
-                    document.querySelector(`[data-section="${sectionId}"]`) ||
-                    document.querySelector(`.${sectionId}-section`);
-                  if (fallbackElement) {
-                    fallbackElement.scrollIntoView({
-                      behavior: "smooth",
-                      block: "start",
-                    });
-                  }
-                }
+                handleRedirect(sectionId);
               }}
               sx={{
                 fontWeight: isActive ? 700 : 500,
@@ -174,29 +206,9 @@ const Navbar = () => {
                 if (link.path.startsWith("/")) {
                   navigate(link.path);
                 } else if (link.path.startsWith("#")) {
-                  // For hash links, use smooth scrolling
+                  // For hash links, use the handleRedirect function
                   const sectionId = link.path.substring(1); // Remove the #
-                  const element = document.getElementById(sectionId);
-                  if (element) {
-                    element.scrollIntoView({
-                      behavior: "smooth",
-                      block: "start",
-                    });
-                  } else {
-                    // Fallback: try to find element by data attribute or class
-                    const fallbackElement =
-                      document.querySelector(`[data-section="${sectionId}"]`) ||
-                      document.querySelector(`.${sectionId}-section`);
-                    if (fallbackElement) {
-                      fallbackElement.scrollIntoView({
-                        behavior: "smooth",
-                        block: "start",
-                      });
-                    } else {
-                      // Last resort: set hash for manual handling
-                      window.location.hash = link.path;
-                    }
-                  }
+                  handleRedirect(sectionId);
                 }
               }}
               sx={{ cursor: "pointer" }}
@@ -219,7 +231,7 @@ const Navbar = () => {
   return (
     <>
       <AppBar
-        position="sticky"
+        position="fixed"
         elevation={0}
         sx={{
           top: showNavbar ? 0 : -92,

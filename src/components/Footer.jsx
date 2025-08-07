@@ -1,20 +1,15 @@
 import React from "react";
 import {
-  Grid,
   Box,
   Stack,
   Link,
   Button,
   Typography,
   TextField,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
   Divider,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { ExpandMore } from "@mui/icons-material";
 import whiteLogo from "/images/logos/white_logo.png";
 
 const Footer = () => {
@@ -22,128 +17,11 @@ const Footer = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const footerLinks = [
-    {
-      title: "Shop",
-      links: [
-        { label: "New Arrivals", redirect: "#" },
-        { label: "Outwear", redirect: "#" },
-        { label: "Bottoms", redirect: "#" },
-        { label: "Accessories", redirect: "#" },
-      ],
-    },
-    {
-      title: "Support",
-      links: [
-        { label: "Size Guide", redirect: "#" },
-        { label: "Returns", redirect: "#" },
-        { label: "Privacy Policy", redirect: "/privacy-policy" },
-        { label: "Terms of Service", redirect: "#" },
-      ],
-    },
-    {
-      title: "Follow Us",
-      links: [
-        { label: "Instagram", redirect: "#" },
-        { label: "TikTok", redirect: "#" },
-        { label: "Twitter", redirect: "#" },
-        { label: "Discord", redirect: "#" },
-      ],
-    },
+    { label: "Size Guide", redirect: "#" },
+    { label: "Returns", redirect: "#" },
+    { label: "Privacy Policy", redirect: "/privacy-policy" },
+    { label: "Terms of Service", redirect: "#" },
   ];
-
-  const renderFooterSection = (section, index) => {
-    const content = section.links.map((link, linkIndex) => (
-      <Link
-        key={linkIndex}
-        href={link.redirect}
-        underline="none"
-        color="background.default"
-        fontFamily={"Oswald, sans-serif"}
-        sx={{
-          cursor: "pointer",
-          transition: "all 0.3s ease",
-          "&:hover": {
-            color: "text.secondary",
-          },
-        }}
-      >
-        {link.label}
-      </Link>
-    ));
-
-    if (isMobile) {
-      return (
-        <Accordion
-          key={index}
-          sx={{
-            backgroundColor: "transparent",
-            boxShadow: "none",
-            borderTop: "2px solid white",
-            "&:last-child": {
-              borderBottom: "2px solid white",
-            },
-
-            "&:before": {
-              display: "none",
-            },
-            "& .MuiAccordionSummary-root": {
-              padding: 0,
-              minHeight: "auto",
-            },
-            "& .MuiAccordionDetails-root": {
-              padding: "8px 0",
-            },
-          }}
-        >
-          <AccordionSummary
-            expandIcon={
-              <ExpandMore
-                sx={{
-                  color: "white",
-                  fontSize: "20px",
-                }}
-              />
-            }
-            sx={{
-              "& .MuiAccordionSummary-content": {
-                margin: "12px 0",
-              },
-            }}
-          >
-            <Typography
-              variant="h6"
-              color="text.secondary"
-              fontFamily="Oswald, sans-serif"
-              textTransform="uppercase"
-            >
-              {section.title}
-            </Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Stack spacing={1.5}>{content}</Stack>
-          </AccordionDetails>
-        </Accordion>
-      );
-    }
-
-    return (
-      <Grid
-        size={{
-          xs: 12,
-          sm: 6,
-          md: 4,
-        }}
-        key={index}
-      >
-        <Stack spacing={2} padding={2}>
-          <Typography variant="h6" color="text.secondary">
-            {section.title}
-          </Typography>
-          <Stack spacing={1.5}>{content}</Stack>
-        </Stack>
-      </Grid>
-    );
-  };
 
   return (
     <Stack
@@ -159,77 +37,107 @@ const Footer = () => {
       <Stack
         direction={{
           xs: "column",
-          sm: "row",
+          md: "row",
         }}
         width={{
           xs: "100%",
-          sm: "75%",
+          sm: "90%",
+          md: "85%",
         }}
+        spacing={4}
+        alignItems="center"
+        justifyContent="space-between"
       >
-        {/* Logo */}
+        {/* Logo Section */}
         <Box
-          height="100%"
-          width={isMobile ? "100%" : 300}
           display="flex"
           flexDirection="column"
-          justifyContent="center"
           alignItems="center"
-          mb={isMobile ? 3 : 0}
+          textAlign="center"
         >
           <Box
             component="img"
             src={whiteLogo}
             alt="Logo"
             sx={{
-              width: 150,
+              width: { xs: 120, md: 150 },
               height: "auto",
               marginBottom: 2,
             }}
           />
+          <Typography
+            variant="body2"
+            sx={{
+              fontFamily: "Space Mono, monospace",
+              fontSize: "0.85rem",
+              opacity: 0.8,
+              maxWidth: 200,
+              lineHeight: 1.4,
+            }}
+          >
+            Unnecessary products for unnecessary people
+          </Typography>
         </Box>
 
-        {/* Footer Links */}
-        {isMobile ? (
-          <Stack width="100%" spacing={0}>
-            {footerLinks.map((section, index) =>
-              renderFooterSection(section, index)
-            )}
+        {/* Quick Links */}
+        <Stack spacing={2} alignItems={{ xs: "center", md: "flex-start" }}>
+          <Typography
+            variant="h6"
+            color="text.secondary"
+            fontFamily="Oswald, sans-serif"
+            textTransform="uppercase"
+            letterSpacing={1}
+          >
+            Quick Links
+          </Typography>
+          <Stack
+            direction={{ xs: "column", sm: "row", md: "column" }}
+            spacing={{ xs: 1, sm: 3, md: 1.5 }}
+            alignItems={{ xs: "center", md: "flex-start" }}
+          >
+            {footerLinks.map((link, index) => (
+              <Link
+                key={index}
+                href={link.redirect}
+                underline="none"
+                color="background.default"
+                fontFamily="Space Mono, monospace"
+                sx={{
+                  cursor: "pointer",
+                  transition: "all 0.3s ease",
+                  fontSize: "0.9rem",
+                  "&:hover": {
+                    color: "text.secondary",
+                    transform: "translateX(5px)",
+                  },
+                }}
+              >
+                {link.label}
+              </Link>
+            ))}
           </Stack>
-        ) : (
-          <Grid container flex={1}>
-            {footerLinks.map((section, index) =>
-              renderFooterSection(section, index)
-            )}
-          </Grid>
-        )}
+        </Stack>
 
-        {/* Newsletter */}
-        <Box
-          width={isMobile ? "100%" : 400}
-          height="100%"
-          display="flex"
-          flexDirection="column"
-          justifyContent="start"
-          alignItems="start"
-          padding={2}
-          mt={isMobile ? 2 : 0}
+        {/* Newsletter Section */}
+        <Stack
+          spacing={2}
+          alignItems={{ xs: "center", md: "flex-start" }}
+          width={{ xs: "100%", md: "auto" }}
+          maxWidth={{ xs: "100%", md: 350 }}
         >
           <Typography
             variant="h6"
             color="text.secondary"
-            marginBottom={2}
             fontFamily="Oswald, sans-serif"
             textTransform="uppercase"
+            letterSpacing={1}
           >
             Stay Updated
           </Typography>
           <Stack
             spacing={2}
             width="100%"
-            direction={{
-              xs: "column",
-              sm: "row",
-            }}
+            direction={{ xs: "column", sm: "row" }}
           >
             <TextField
               placeholder="Enter your email"
@@ -238,11 +146,11 @@ const Footer = () => {
               type="email"
               sx={{
                 "& .MuiOutlinedInput-root": {
-                  borderRadius: 3,
+                  borderRadius: 2,
                   backgroundColor: "white",
                   "& fieldset": {
                     borderColor: "white",
-                    borderRadius: 3,
+                    borderRadius: 2,
                   },
                   "&:hover fieldset": {
                     borderColor: "#ff0000",
@@ -252,7 +160,8 @@ const Footer = () => {
                   },
                 },
                 "& .MuiInputBase-input": {
-                  fontFamily: "Oswald, sans-serif",
+                  fontFamily: "Space Mono, monospace",
+                  fontSize: "0.9rem",
                 },
               }}
             />
@@ -261,32 +170,36 @@ const Footer = () => {
               sx={{
                 backgroundColor: "red",
                 color: "white",
-                padding: "10px 40px",
+                padding: "12px 24px",
                 border: "2px solid red",
                 fontFamily: "Oswald, sans-serif",
                 textTransform: "uppercase",
+                borderRadius: 2,
+                minWidth: { xs: "100%", sm: "auto" },
+                transition: "all 0.3s ease",
                 "&:hover": {
                   backgroundColor: "transparent",
                   color: "text.secondary",
+                  transform: "translateY(-2px)",
                 },
               }}
             >
               Subscribe
             </Button>
           </Stack>
-        </Box>
+        </Stack>
       </Stack>
 
       <Divider
         sx={{
-          width: "75%",
+          width: "85%",
           marginY: 4,
-          backgroundColor: "white",
+          backgroundColor: "rgba(255, 255, 255, 0.3)",
         }}
       />
 
       <Stack
-        width="75%"
+        width="85%"
         direction={{
           xs: "column",
           sm: "row",
@@ -295,8 +208,25 @@ const Footer = () => {
         alignItems="center"
         spacing={2}
       >
-        <Typography>© 2025 UNNECESSARY. All rights reserved.</Typography>
-        <Typography>BUILT FOR THE UNNECESSARY</Typography>
+        <Typography
+          sx={{
+            fontFamily: "Space Mono, monospace",
+            fontSize: "0.85rem",
+            opacity: 0.8,
+          }}
+        >
+          © 2025 UNNECESSARY. All rights reserved.
+        </Typography>
+        <Typography
+          sx={{
+            fontFamily: "Oswald, sans-serif",
+            fontSize: "0.9rem",
+            letterSpacing: 1,
+            textTransform: "uppercase",
+          }}
+        >
+          Built for the Unnecessary
+        </Typography>
       </Stack>
     </Stack>
   );
