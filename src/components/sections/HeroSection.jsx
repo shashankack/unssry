@@ -27,6 +27,9 @@ const HeroSection = ({
   const [currentDate, setCurrentDate] = useState(formatDate(new Date()));
   const [currentTime, setCurrentTime] = useState(formatTime(new Date()));
   const [currentTagline, setCurrentTagline] = useState("");
+  const [hasPlayed, setHasPlayed] = useState(
+    sessionStorage.getItem("hasPlayed") === "true"
+  );
   const japaneseTextRef = useRef(null);
   const uTextRef = useRef(null);
   const nnecessaryTextRef = useRef(null);
@@ -57,84 +60,119 @@ const HeroSection = ({
 
   useEffect(() => {
     if (japaneseTextRef.current) {
-      gsap.fromTo(
-        japaneseTextRef.current,
-        {
-          opacity: 0,
-        },
-        {
-          opacity: 1,
-          duration: 0.6,
-          ease: "back.out",
-          delay: 0.5,
-        }
-      );
+      if (hasPlayed) {
+        // If animations have already played, show immediately
+        gsap.set(japaneseTextRef.current, { opacity: 1 });
+      } else {
+        // Run animation for first time
+        gsap.fromTo(
+          japaneseTextRef.current,
+          {
+            opacity: 0,
+          },
+          {
+            opacity: 1,
+            duration: 0.6,
+            ease: "back.out",
+            delay: 0.5,
+          }
+        );
+      }
     }
-  }, []);
+  }, [hasPlayed]);
 
   useEffect(() => {
     if (uTextRef.current && nnecessaryTextRef.current) {
-      gsap.set(uTextRef.current, {
-        scale: 0,
-        transformOrigin: "center center",
-      });
-
-      gsap.set(nnecessaryTextRef.current, {
-        width: 0,
-        overflow: "hidden",
-        whiteSpace: "nowrap",
-      });
-
-      const tl = gsap.timeline({ delay: 1.2 });
-
-      tl.to(uTextRef.current, {
-        scale: 1,
-        duration: 0.6,
-        ease: "back.out(1.7)",
-      }).to(
-        nnecessaryTextRef.current,
-        {
+      if (hasPlayed) {
+        // If animations have already played, show immediately
+        gsap.set(uTextRef.current, {
+          scale: 1,
+          transformOrigin: "center center",
+        });
+        gsap.set(nnecessaryTextRef.current, {
           width: "auto",
-          duration: 0.8,
-          ease: "power2.out",
-        },
-        "+=0.1"
-      );
+          overflow: "hidden",
+          whiteSpace: "nowrap",
+        });
+      } else {
+        // Run animation for first time
+        gsap.set(uTextRef.current, {
+          scale: 0,
+          transformOrigin: "center center",
+        });
+
+        gsap.set(nnecessaryTextRef.current, {
+          width: 0,
+          overflow: "hidden",
+          whiteSpace: "nowrap",
+        });
+
+        const tl = gsap.timeline({ delay: 1.2 });
+
+        tl.to(uTextRef.current, {
+          scale: 1,
+          duration: 0.6,
+          ease: "back.out(1.7)",
+        }).to(
+          nnecessaryTextRef.current,
+          {
+            width: "auto",
+            duration: 0.8,
+            ease: "power2.out",
+          },
+          "+=0.1"
+        );
+      }
     }
-  }, []);
+  }, [hasPlayed]);
 
   useEffect(() => {
     if (taglineRef.current && collectionRef.current) {
-      gsap.set([taglineRef.current, collectionRef.current], {
-        yPercent: -200,
-      });
+      if (hasPlayed) {
+        // If animations have already played, show immediately
+        gsap.set([taglineRef.current, collectionRef.current], {
+          yPercent: 0,
+          opacity: 1,
+        });
+      } else {
+        // Run animation for first time
+        gsap.set([taglineRef.current, collectionRef.current], {
+          yPercent: -200,
+        });
 
-      const tl = gsap.timeline({ delay: 2.8 });
+        const tl = gsap.timeline({ delay: 2.8 });
 
-      tl.to(taglineRef.current, {
-        yPercent: 0,
-        duration: 0.8,
-        ease: "power2.out",
-      }).to(
-        collectionRef.current,
-        {
+        tl.to(taglineRef.current, {
           yPercent: 0,
           duration: 0.8,
           ease: "power2.out",
-        },
-        "-=0.4"
-      );
+        }).to(
+          collectionRef.current,
+          {
+            yPercent: 0,
+            duration: 0.8,
+            ease: "power2.out",
+          },
+          "-=0.4"
+        );
 
-      // Trigger navbar animation using class selector
-      gsap.to(".navbar", {
-        y: 0,
-        opacity: 1,
-        duration: 2,
-        ease: "power2.out",
-        delay: 2.6,
-      });
+        // Trigger navbar animation using class selector (only on first play)
+        gsap.to(".navbar", {
+          y: 0,
+          opacity: 1,
+          duration: 2,
+          ease: "power2.out",
+          delay: 2.6,
+        });
+
+        // Mark animations as played after they complete
+        setTimeout(() => {
+          sessionStorage.setItem("hasPlayed", "true");
+          setHasPlayed(true);
+        }, 4600); // After all animations complete
+      }
     }
-  }, []);
+  }, [hasPlayed]);
 
   return (
     <Box position="relative" minHeight="100vh" width="100%" overflow="hidden">
@@ -176,7 +214,7 @@ const HeroSection = ({
             md: 500,
           }}
           color="#dddddd"
-          sx={{ opacity: 0 }}
+          sx={{ opacity: hasPlayed ? 1 : 0 }} // Show immediately if played before
         >
           不要
         </Typography>

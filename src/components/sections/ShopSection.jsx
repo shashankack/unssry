@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Box,
   Stack,
@@ -14,6 +14,11 @@ import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import { fetchCollection } from "../../utils/shopify";
 import { useCart } from "../../context/CartContext";
 import { slugify } from "../../utils/slugify";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+// Register ScrollTrigger plugin
+gsap.registerPlugin(ScrollTrigger);
 
 // Import Swiper styles
 import "swiper/css";
@@ -28,6 +33,9 @@ const ShopSection = ({ collectionHandle, dropStatus }) => {
   const navigate = useNavigate();
   const { addItemToCart, loading: cartLoading } = useCart();
   const isMobile = window.innerWidth < 768;
+
+  // Ref for Swiper animation
+  const swiperRef = useRef(null);
 
   useEffect(() => {
     const getCollectionData = async () => {
@@ -46,6 +54,36 @@ const ShopSection = ({ collectionHandle, dropStatus }) => {
 
     getCollectionData();
   }, [collectionHandle]);
+
+  // GSAP ScrollTrigger animation for Swiper content
+  useEffect(() => {
+    if (!loading && products.length > 0 && swiperRef.current) {
+      const ctx = gsap.context(() => {
+        const slides = swiperRef.current.querySelectorAll(".swiper-slide");
+
+        gsap.set(slides, {
+          y: 80,
+          opacity: 0,
+        });
+
+        gsap.to(slides, {
+          y: 0,
+          opacity: 1,
+          duration: 0.6,
+          ease: "power2.out",
+          stagger: 0.1,
+          scrollTrigger: {
+            trigger: swiperRef.current,
+            start: "top 85%",
+            end: "top 50%",
+            toggleActions: "play none none reverse",
+          },
+        });
+      }, swiperRef);
+
+      return () => ctx.revert();
+    }
+  }, [loading, products]);
 
   if (loading) {
     return (
@@ -200,6 +238,7 @@ const ShopSection = ({ collectionHandle, dropStatus }) => {
 
       {/* Product Swiper */}
       <Box
+        ref={swiperRef}
         width="90%"
         py={{
           xs: 10,

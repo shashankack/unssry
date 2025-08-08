@@ -34,6 +34,7 @@ const Navbar = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [initialAnimationComplete, setInitialAnimationComplete] =
     useState(false);
+  const [hasPlayed] = useState(sessionStorage.getItem("hasPlayed") === "true");
 
   // Search popup state
   const [searchOpen, setSearchOpen] = useState(false);
@@ -113,14 +114,20 @@ const Navbar = () => {
 
   // Set up initial GSAP animation trigger
   useEffect(() => {
-    // Wait for GSAP animation from HeroSection, then enable scroll behavior
-    const timer = setTimeout(() => {
-      setInitialAnimationComplete(true);
+    if (hasPlayed) {
+      // If animations have already played, show navbar immediately
       setShowNavbar(true);
-    }, 3200); // After HeroSection animation completes (2.6s + 0.6s)
+      setInitialAnimationComplete(true);
+    } else {
+      // Wait for GSAP animation from HeroSection, then enable scroll behavior
+      const timer = setTimeout(() => {
+        setInitialAnimationComplete(true);
+        setShowNavbar(true);
+      }, 3200); // After HeroSection animation completes (2.6s + 0.6s)
 
-    return () => clearTimeout(timer);
-  }, []);
+      return () => clearTimeout(timer);
+    }
+  }, [hasPlayed]);
 
   const handleDrawerToggle = () => {
     setDrawerOpen(!drawerOpen);
@@ -251,11 +258,13 @@ const Navbar = () => {
         position="fixed"
         elevation={0}
         sx={{
-          top: showNavbar ? 0 : -92,
+          top: hasPlayed ? (showNavbar ? 0 : -92) : (showNavbar ? 0 : -92),
           transition: "top 0.25s cubic-bezier(.8,.2,.1,1)",
           bgcolor: "background.default",
           color: "text.primary",
           borderBottom: `3px solid black`,
+          // Set initial opacity for GSAP animation control
+          opacity: hasPlayed ? 1 : (showNavbar ? 1 : 0),
         }}
       >
         <Box
